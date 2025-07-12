@@ -1,23 +1,29 @@
-import { useEffect, useRef } from 'react';
-import * as signalR from '@microsoft/signalr';
+import { useEffect, useRef } from "react";
+import * as signalR from "@microsoft/signalr";
 
 export const useSignalR = (onLocationReceived: (location: any) => void) => {
   const connection = useRef<signalR.HubConnection | null>(null);
 
   useEffect(() => {
     connection.current = new signalR.HubConnectionBuilder()
-      .withUrl('https://tech-test.raintor.com/Hub', {
+      .withUrl("https://tech-test.raintor.com/Hub", {
         skipNegotiation: true,
-        transport: 1 
+        transport: signalR.HttpTransportType.WebSockets,
       })
       .withAutomaticReconnect()
       .build();
 
-    connection.current.start().catch((error) => {
-      console.error("SignalR connection failed:", error);
-    });
+    connection.current
+      .start()
+      .then(() => {
+        console.log("SignalR connection started");
+      })
+      .catch((error) => {
+        console.error("SignalR connection failed:", error);
+      });
 
-    connection.current.on('ReceiveLatLon', (payload) => {
+    connection.current.on("ReceiveLatLon", (payload) => {
+      console.log(payload, "received");
       onLocationReceived(payload);
     });
 
@@ -27,8 +33,15 @@ export const useSignalR = (onLocationReceived: (location: any) => void) => {
   }, []);
 
   const sendLatLon = (lat: number, lon: number, userName: string) => {
-    connection.current?.invoke('SendLatLon', lat, lon, userName).catch(console.error);
+    console.log(lat, lon, userName);
+    connection.current
+      ?.invoke("SendLatLon", lat, lon, userName)
+      .catch(console.error);
   };
 
-  return { sendLatLon };
+  const onReceiveLocation = (payload: any) => {
+    onLocationReceived(payload);
+  };
+
+  return { sendLatLon, onReceiveLocation };
 };
