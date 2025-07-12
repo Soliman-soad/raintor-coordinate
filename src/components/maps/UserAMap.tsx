@@ -8,7 +8,7 @@ export default function UserAMap() {
     const interval = setInterval(() => {
       const lat = 23.8103 + Math.random() / 100; // Simulated coords
       const lon = 90.4125 + Math.random() / 100;
-      sendLatLon(lat, lon, 'soliman@example.com');
+      sendLatLon(lat, lon, 'mdsolimansoad@gmail.com');
     }, 2000);
 
     return () => clearInterval(interval);
