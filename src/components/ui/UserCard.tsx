@@ -8,7 +8,7 @@ interface UserCardProps {
 
 const UserCard = memo(function UserCard({ user }: UserCardProps) {
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 border border-gray-100">
+    <div className="bg-white rounded-lg p-6 hover:shadow-sm transition-shadow duration-200 border border-gray-100">
       <div className="space-y-4">
         <div className="flex gap-2">
           <div className="flex-shrink-0">

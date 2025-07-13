@@ -21,7 +21,8 @@
     "react-leaflet": "^5.0.0",
     "react-redux": "^9.2.0",
     "react-signalr": "^0.2.24",
-    "react-window": "^1.8.11"
+    "react-window": "^1.8.11",
+    "react-window-infinite-loader": "^1.0.10"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -29,6 +30,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-window-infinite-loader": "^1.0.9",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

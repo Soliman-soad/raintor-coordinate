@@ -1,7 +1,7 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useGetUsersQuery } from "../services/api";
-import { useInView } from "react-intersection-observer";
 import UserCard from "./ui/UserCard";
+import SkeletonCard from "./ui/SkeletonCard";
 import LoadingSpinner from "./ui/LoadingSpinner";
 import ErrorMessage from "./ui/ErrorMessage";
 import EmptyState from "./ui/EmptyState";
@@ -11,111 +11,94 @@ const ITEMS_PER_PAGE = 10;
 
 export default function UserList() {
   const [skip, setSkip] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
   const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [hasMore, setHasMore] = useState(true);
 
   const { data, error, isLoading, isFetching, refetch } = useGetUsersQuery({
     take: ITEMS_PER_PAGE,
     skip,
   });
 
-  const loadMore = useCallback(() => {
-    if (!isFetching && hasMore && data) {
-      const nextSkip = skip + ITEMS_PER_PAGE;
-      if (nextSkip < data.total) {
-        setSkip(nextSkip);
-      } else {
-        setHasMore(false);
-      }
-    }
-  }, [isFetching, hasMore, data, skip]);
-
-  const { ref: observerRef, inView } = useInView({
-    threshold: 0.1,
-    rootMargin: "100px",
-  });
-
-  useEffect(() => {
-    if (inView && hasMore && !isFetching) {
-      loadMore();
-    }
-  }, [inView, hasMore, isFetching, loadMore]);
-
+  // Update user list on data fetch
   useEffect(() => {
     if (data?.users?.length) {
-      setAllUsers((prev: User[]) => {
+      setAllUsers((prev) => {
         const newUsers = data.users.filter(
           (u) => !prev.some((p) => p.id === u.id)
         );
         return [...prev, ...newUsers];
       });
+
+      if (skip + ITEMS_PER_PAGE >= data.total) {
+        setHasMore(false);
+      }
     }
-  }, [data]);
+  }, [data, skip]);
+
+  // Infinite scroll listener
+  useEffect(() => {
+    const handleScroll = () => {
+      const { scrollTop, clientHeight, scrollHeight } =
+        document.documentElement;
+      if (
+        scrollTop + clientHeight >= scrollHeight - 100 &&
+        !isFetching &&
+        hasMore
+      ) {
+        setSkip((prev) => prev + ITEMS_PER_PAGE);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isFetching, hasMore]);
 
   const handleRetry = useCallback(() => {
     setSkip(0);
+    setAllUsers([]);
     setHasMore(true);
     refetch();
   }, [refetch]);
 
   if (error) {
-    let errorMessage = "Failed to load users";
-
-    if ("data" in error && error.data) {
-      errorMessage = (error.data as any)?.message || errorMessage;
-    } else if ("error" in error) {
-      errorMessage = error.error || errorMessage;
-    }
-
-    return <ErrorMessage message={errorMessage} onRetry={handleRetry} />;
+    let msg = "Failed to load users";
+    if ("data" in error && error.data)
+      msg = (error.data as any)?.message || msg;
+    else if ("error" in error) msg = error.error || msg;
+    return <ErrorMessage message={msg} onRetry={handleRetry} />;
   }
 
-  if (isLoading && !data) {
+  if (isLoading && allUsers.length === 0) {
     return <LoadingSpinner text="users" />;
   }
 
-  if (data && data.users.length === 0) {
+  if (data && data.users.length === 0 && allUsers.length === 0) {
     return <EmptyState />;
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          User Directory
-        </h1>
-        {data && (
-          <p className="text-gray-600">
-            Showing {allUsers.length} of {data.total} users
-          </p>
-        )}
+    <div className="w-full max-w-5xl mx-auto px-4 py-8">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">User Directory</h1>
+        <p className="text-sm text-gray-600">
+          Showing {allUsers.length} of {data?.total ?? 0} users
+        </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="flex flex-col gap-6">
         {allUsers.map((user) => (
           <UserCard key={user.id} user={user} />
         ))}
+
+        {isFetching &&
+          Array.from({ length: ITEMS_PER_PAGE }).map((_, idx) => (
+            <SkeletonCard key={idx + 1} />
+          ))}
       </div>
 
-      {isFetching && (
-        <div className="mt-8">
-          <LoadingSpinner text="users" />
-        </div>
-      )}
-
-      {hasMore && (
-        <div
-          ref={observerRef}
-          className="h-4 w-full"
-          aria-label="Load more users"
-        />
-      )}
-
-      {!hasMore && data && data.users.length > 0 && (
-        <div className="text-center py-8">
-          <p className="text-gray-500 text-sm">
-            You've reached the end of the user list
-          </p>
+      {!hasMore && allUsers.length > 0 && (
+        <div className="text-center mt-6 text-sm text-gray-500">
+          You've reached the end of the user list.
         </div>
       )}
     </div>
