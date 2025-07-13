@@ -54,7 +54,9 @@ function UserAMapContent() {
     setError(null);
     setIsConnected(false);
 
-    window.location.reload();
+    if (typeof window !== "undefined") {
+      window.location.reload();
+    }
   };
 
   if (error) {
