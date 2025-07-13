@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { User } from "../../types/user";
 import { BriefcaseBusiness, Mail, Phone, School } from "lucide-react";
+import Image from "next/image";
 
 interface UserCardProps {
   user: User;
@@ -12,10 +13,13 @@ const UserCard = memo(function UserCard({ user }: UserCardProps) {
       <div className="space-y-4">
         <div className="flex gap-2">
           <div className="flex-shrink-0">
-            <img
+            <Image
               src={user.image}
               alt={`${user.firstName} ${user.lastName}`}
               className="w-16 h-16 rounded-full object-cover border-2 border-gray-200"
+              width={64}
+              height={64}
+              loading="lazy"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = `https://ui-avatars.com/api/?name=${user.firstName}+${user.lastName}&background=random&size=64`;

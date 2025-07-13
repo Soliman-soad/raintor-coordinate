@@ -28,6 +28,7 @@ function UserAMapContent() {
       } catch (err) {
         setError("Failed to connect to location service");
         setIsConnected(false);
+        console.error("Connection error:", err);
       }
     };
 
@@ -94,7 +95,7 @@ function UserAMapContent() {
           </p>
 
           <div className="mt-4 p-4 bg-gray-100 rounded-lg">
-            <div className="flex items-center justify-center mb-2">            
+            <div className="flex items-center justify-center mb-2">
               <MapPinCheck color="green" size={100} />
             </div>
             <p className="text-sm text-gray-600 mb-2">
