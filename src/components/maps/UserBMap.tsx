@@ -45,7 +45,7 @@ export default function UserBMap() {
     return (
       <div>
         <h2 className="text-4xl text-center mt-8">📍 Live Location Viewer</h2>
-        <LoadingSpinner />
+        <LoadingSpinner text="location" />
       </div>
     );
   }

@@ -4,7 +4,7 @@ export default function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4">
       <div className="text-center">
-        <BriefcaseBusiness size={24} />
+        <BriefcaseBusiness size={24} className="mx-auto" />
         <h3 className="mt-2 text-sm font-medium text-gray-900">
           No users found
         </h3>

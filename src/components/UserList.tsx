@@ -71,7 +71,7 @@ export default function UserList() {
   }
 
   if (isLoading && !data) {
-    return <LoadingSpinner />;
+    return <LoadingSpinner text="users" />;
   }
 
   if (data && data.users.length === 0) {
@@ -99,7 +99,7 @@ export default function UserList() {
 
       {isFetching && (
         <div className="mt-8">
-          <LoadingSpinner />
+          <LoadingSpinner text="users" />
         </div>
       )}
 

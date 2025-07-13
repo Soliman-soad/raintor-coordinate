@@ -12,7 +12,7 @@ export default function ErrorMessage({
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4">
       <div className="text-center">
-        <RefreshCwOff size={24} />
+        <RefreshCwOff size={34} className="mx-auto"/>
         <h3 className="mt-2 text-sm font-medium text-gray-900">
           Error loading users
         </h3>
