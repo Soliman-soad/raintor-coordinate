@@ -5,6 +5,11 @@ export const useSignalR = (onLocationReceived: (location: any) => void) => {
   const connection = useRef<signalR.HubConnection | null>(null);
 
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === "undefined") {
+      return;
+    }
+
     connection.current = new signalR.HubConnectionBuilder()
       .withUrl("https://tech-test.raintor.com/Hub", {
         skipNegotiation: true,
@@ -30,7 +35,7 @@ export const useSignalR = (onLocationReceived: (location: any) => void) => {
     return () => {
       connection.current?.stop();
     };
-  }, []);
+  }, [onLocationReceived]);
 
   const sendLatLon = (lat: number, lon: number, userName: string) => {
     console.log(lat, lon, userName);

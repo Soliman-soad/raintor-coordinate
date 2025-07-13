@@ -19,7 +19,6 @@ export default function UserList() {
     skip,
   });
 
-  // Update user list on data fetch
   useEffect(() => {
     if (data?.users?.length) {
       setAllUsers((prev) => {
@@ -35,8 +34,11 @@ export default function UserList() {
     }
   }, [data, skip]);
 
-  // Infinite scroll listener
   useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
     const handleScroll = () => {
       const { scrollTop, clientHeight, scrollHeight } =
         document.documentElement;
