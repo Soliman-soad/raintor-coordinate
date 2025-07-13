@@ -3,6 +3,7 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import { useSignalR } from "../../hooks/useSignalR";
 import L from "leaflet";
+import LoadingSpinner from "../ui/LoadingSpinner";
 
 // Fix Leaflet icon paths for Next.js
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -37,35 +38,34 @@ export default function UserBMap() {
   );
 
   useSignalR((payload) => {
-    console.log(payload);
     setPosition({ lat: payload.lat, lon: payload.lon });
   });
-
-  console.log(position?.lat);
 
   if (!position?.lat) {
     return (
       <div>
-        <h2>📍 Live Location Viewer</h2>
-        <p>Waiting for location data...</p>
+        <h2 className="text-4xl text-center mt-8">📍 Live Location Viewer</h2>
+        <LoadingSpinner />
       </div>
     );
   }
 
   return (
     <div>
-      <h2>📍 Live Location Viewer</h2>
-      <MapContainer
-        style={{ height: "400px" }}
-        bounds={[
-          [position.lat, position.lon],
-          [position.lat + 0.01, position.lon + 0.01],
-        ]}
-        boundsOptions={{ padding: [100, 100] }}
-      >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <Marker position={[position.lat, position.lon]} />
-      </MapContainer>
+      <h2 className="text-4xl text-center mt-8">📍 Live Location Viewer</h2>
+      <div className="max-w-4xl mx-auto p-6 rounded-lg mt-8">
+        <MapContainer
+          style={{ height: "400px" }}
+          bounds={[
+            [position.lat, position.lon],
+            [position.lat + 0.01, position.lon + 0.01],
+          ]}
+          boundsOptions={{ padding: [100, 100] }}
+        >
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+          <Marker position={[position.lat, position.lon]} />
+        </MapContainer>
+      </div>
     </div>
   );
 }
