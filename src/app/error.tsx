@@ -2,14 +2,13 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { AlertTriangle, RefreshCw, Home, ArrowLeft } from "lucide-react";
+import { AlertTriangle, Home } from "lucide-react";
 
 interface ErrorProps {
   error: Error & { digest?: string };
-  reset: () => void;
 }
 
-export default function Error({ error, reset }: ErrorProps) {
+export default function Error({ error }: ErrorProps) {
   useEffect(() => {
     console.error("Global error caught:", error);
   }, [error]);
